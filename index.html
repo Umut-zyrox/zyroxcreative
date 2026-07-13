@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZyroxCreative — Tasarım Galerisi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0a0d;
+    --ink-2:#111116;
+    --panel:#16161c;
+    --line:#26262f;
+    --paper:#eef0f5;
+    --paper-dim:#a9a9b8;
+    --violet:#7c5cff;
+    --violet-dim:#4d3a99;
+    --lime:#c8ff4d;
+    --danger:#ff5c6c;
+    --radius:14px;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Manrope',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--violet);color:var(--ink);}
+  a{color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* subtle grain / scanline background */
+  .bg-scan{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:repeating-linear-gradient(180deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+    opacity:.5;
+  }
+
+  /* NAV */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,10,13,.72);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  .logo{
+    display:flex;flex-direction:column;line-height:1;cursor:default;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .logo b{font-size:20px;font-weight:700;letter-spacing:.5px;}
+  .logo span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:3px;color:var(--lime);margin-top:2px;
+  }
+  .nav-links{display:flex;gap:32px;align-items:center;}
+  .nav-links a{
+    font-size:14px;font-weight:600;text-decoration:none;color:var(--paper-dim);
+    transition:color .2s var(--ease);
+    position:relative;
+  }
+  .nav-links a:hover{color:var(--paper);}
+  .nav-links a:focus-visible{outline:2px solid var(--violet);outline-offset:4px;border-radius:3px;}
+  .btn-mini{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.5px;
+    background:var(--lime);color:var(--ink);
+    border:none;padding:10px 18px;border-radius:999px;
+    font-weight:600;cursor:pointer;
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .btn-mini:hover{transform:translateY(-2px);box-shadow:0 8px 24px -8px rgba(200,255,77,.5);}
+  .btn-mini:focus-visible{outline:2px solid var(--paper);outline-offset:3px;}
+
+  /* HERO */
+  .hero{
+    position:relative;z-index:1;
+    padding:96px 0 72px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:end;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:3px;color:var(--violet);
+    display:flex;align-items:center;gap:10px;margin-bottom:22px;
+  }
+  .eyebrow::before{content:'';width:22px;height:1px;background:var(--violet);}
+  h1.hero-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(44px,6.4vw,84px);
+    line-height:.96;
+    letter-spacing:-1.5px;
+    margin:0 0 24px;
+  }
+  h1.hero-title .out{color:var(--paper-dim);}
+  h1.hero-title .glow{color:var(--lime);}
+  .hero-sub{
+    font-size:17px;line-height:1.6;color:var(--paper-dim);
+    max-width:460px;margin:0 0 32px;
+  }
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn-primary{
+    font-family:'Space Grotesk',sans-serif;
+    background:var(--violet);color:#fff;border:none;
+    padding:15px 26px;border-radius:10px;font-weight:600;font-size:15px;
+    cursor:pointer;transition:transform .2s var(--ease), background .2s var(--ease);
+  }
+  .btn-primary:hover{background:#8f70ff;transform:translateY(-2px);}
+  .btn-primary:focus-visible{outline:2px solid var(--lime);outline-offset:3px;}
+  .btn-ghost{
+    font-family:'Space Grotesk',sans-serif;
+    background:transparent;color:var(--paper);border:1px solid var(--line);
+    padding:15px 26px;border-radius:10px;font-weight:600;font-size:15px;
+    cursor:pointer;transition:border-color .2s var(--ease), transform .2s var(--ease);
+  }
+  .btn-ghost:hover{border-color:var(--paper-dim);transform:translateY(-2px);}
+  .btn-ghost:focus-visible{outline:2px solid var(--violet);outline-offset:3px;}
+
+  .hero-stat{
+    font-family:'JetBrains Mono',monospace;
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;background:var(--panel);
+  }
+  .hero-stat .num{font-family:'Space Grotesk',sans-serif;font-size:38px;font-weight:700;color:var(--lime);}
+  .hero-stat .lbl{font-size:11px;letter-spacing:2px;color:var(--paper-dim);margin-top:6px;}
+
+  /* UPLOAD ZONE — signature element: viewfinder brackets */
+  .upload-section{padding:80px 0;position:relative;z-index:1;}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+  .section-head h2{
+    font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin:0;letter-spacing:-.5px;
+  }
+  .section-num{font-family:'JetBrains Mono',monospace;color:var(--paper-dim);font-size:13px;}
+
+  .viewfinder{
+    position:relative;
+    border-radius:var(--radius);
+    padding:64px 24px;
+    text-align:center;
+    background:var(--panel);
+    cursor:pointer;
+    transition:background .25s var(--ease);
+  }
+  .viewfinder.drag{background:#1c1826;}
+  .vf-corner{
+    position:absolute;width:26px;height:26px;
+    border-color:var(--lime);
+    transition:border-color .2s var(--ease), width .2s var(--ease), height .2s var(--ease);
+  }
+  .viewfinder.drag .vf-corner{width:34px;height:34px;border-color:var(--violet);}
+  .vf-tl{top:14px;left:14px;border-top:2px solid;border-left:2px solid;border-radius:6px 0 0 0;}
+  .vf-tr{top:14px;right:14px;border-top:2px solid;border-right:2px solid;border-radius:0 6px 0 0;}
+  .vf-bl{bottom:14px;left:14px;border-bottom:2px solid;border-left:2px solid;border-radius:0 0 0 6px;}
+  .vf-br{bottom:14px;right:14px;border-bottom:2px solid;border-right:2px solid;border-radius:0 0 6px 0;}
+  .vf-icon{font-family:'Space Grotesk',sans-serif;font-size:40px;margin-bottom:14px;color:var(--paper);}
+  .vf-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;margin-bottom:8px;}
+  .vf-sub{font-size:14px;color:var(--paper-dim);margin-bottom:22px;}
+  .vf-sub b{color:var(--lime);font-weight:600;}
+  #fileInput{display:none;}
+
+  .upload-meta{
+    display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px;
+  }
+  .tag-input{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    background:var(--ink-2);border:1px solid var(--line);color:var(--paper);
+    padding:10px 14px;border-radius:8px;width:220px;max-width:70vw;
+  }
+  .tag-input:focus-visible{outline:2px solid var(--violet);}
+
+  /* progress */
+  .up-status{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--paper-dim);
+    margin-top:16px;min-height:16px;
+  }
+
+  /* GALLERY */
+  .gallery-section{padding:20px 0 100px;position:relative;z-index:1;}
+  .filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.5px;
+    background:transparent;border:1px solid var(--line);color:var(--paper-dim);
+    padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s var(--ease);
+  }
+  .chip:hover{color:var(--paper);border-color:var(--paper-dim);}
+  .chip.active{background:var(--lime);color:var(--ink);border-color:var(--lime);font-weight:600;}
+  .chip:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill, minmax(240px,1fr));gap:18px;
+  }
+  .card{
+    position:relative;border-radius:var(--radius);overflow:hidden;
+    background:var(--panel);border:1px solid var(--line);
+    cursor:pointer;
+    transition:transform .25s var(--ease), border-color .25s var(--ease);
+  }
+  .card:hover{transform:translateY(-4px);border-color:var(--violet-dim);}
+  .card:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--ink-2);
+    user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:auto;}
+  .card .scanline{
+    position:absolute;left:0;right:0;top:-100%;height:40%;
+    background:linear-gradient(180deg, transparent, rgba(200,255,77,.18), transparent);
+    transition:top .6s var(--ease);
+    pointer-events:none;
+  }
+  .card:hover .scanline{top:130%;}
+  .card-info{padding:14px 16px;}
+  .card-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .card-meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+  .card-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--lime);}
+  .card-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--paper-dim);}
+  .del-btn{
+    position:absolute;top:10px;right:10px;z-index:2;
+    width:30px;height:30px;border-radius:50%;
+    background:rgba(10,10,13,.72);backdrop-filter:blur(4px);
+    border:1px solid var(--line);color:var(--paper-dim);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;cursor:pointer;opacity:0;transition:opacity .2s var(--ease), color .2s, border-color .2s;
+  }
+  .card:hover .del-btn{opacity:1;}
+  .del-btn:hover{color:var(--danger);border-color:var(--danger);}
+  .del-btn:focus-visible{opacity:1;outline:2px solid var(--danger);}
+  .buy-badge{
+    position:absolute;bottom:14px;left:14px;z-index:2;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;font-weight:600;
+    background:var(--lime);color:var(--ink);padding:6px 12px;border-radius:999px;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .2s var(--ease), transform .2s var(--ease);
+  }
+  .card:hover .buy-badge, .card:focus-within .buy-badge{opacity:1;transform:translateY(0);}
+
+  .empty-state{
+    text-align:center;padding:70px 20px;border:1px dashed var(--line);border-radius:var(--radius);
+  }
+  .empty-state .vf-icon{color:var(--paper-dim);}
+  .empty-state p{color:var(--paper-dim);font-size:14px;max-width:340px;margin:8px auto 0;line-height:1.6;}
+
+  .clear-all{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--paper-dim);
+    background:none;border:none;text-decoration:underline;cursor:pointer;
+  }
+  .clear-all:hover{color:var(--danger);}
+
+  /* LIGHTBOX */
+  .lightbox{
+    position:fixed;inset:0;z-index:100;background:rgba(6,6,8,.9);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;padding:32px;
+  }
+  .lightbox.open{display:flex;}
+  .lb-content{
+    max-width:920px;width:100%;max-height:90vh;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;
+  }
+  .lb-img-wrap{background:var(--ink-2);display:flex;align-items:center;justify-content:center;max-height:64vh;overflow:hidden;}
+  .lb-img-wrap img{max-width:100%;max-height:64vh;object-fit:contain;
+    user-select:none;-webkit-user-select:none;-webkit-user-drag:none;}
+  .lb-footer{padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .lb-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;}
+  .lb-tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--lime);margin-top:4px;}
+  .lb-actions{display:flex;gap:10px;}
+  .lb-close{
+    position:absolute;top:22px;right:32px;
+    background:none;border:1px solid var(--line);color:var(--paper);
+    width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;
+  }
+  .lb-close:hover{border-color:var(--paper-dim);}
+  .lb-close:focus-visible{outline:2px solid var(--violet);}
+
+  footer{
+    border-top:1px solid var(--line);padding:32px 0;position:relative;z-index:1;
+  }
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  footer p{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--paper-dim);margin:0;}
+
+  @media (max-width:820px){
+    .hero-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-scan"></div>
+
+<header>
+  <nav class="wrap">
+    <div class="logo"><b>ZYROX</b><span>CREATIVE</span></div>
+    <div class="nav-links">
+      <a href="#top">Anasayfa</a>
+      <a href="#upload">Yükle</a>
+      <a href="#gallery">Galeri</a>
+    </div>
+    <button class="btn-mini" onclick="goToUpload()">+ Tasarım Ekle</button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">KİŞİSEL TASARIM ARŞİVİ</div>
+        <h1 class="hero-title"><span class="out">İşini</span> göster,<br><span class="glow">arşivini</span> büyüt.</h1>
+        <p class="hero-sub">ZyroxCreative, tasarımlarını tek bir yerde toplayıp sergilemen için yapıldı. Yükleme şifreyle korunur, galeri ise siteyi ziyaret eden herkese açık.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="goToUpload()">Tasarım Yükle</button>
+          <a href="#gallery" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;">Galeriyi Gör</a>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" id="statCount">0</div>
+        <div class="lbl">ARŞİVDEKİ TASARIM · ID: ZX–001</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="upload-section wrap" id="upload">
+    <div class="section-head">
+      <h2>Yeni Tasarım Yükle</h2>
+      <span class="section-num">01 / GİRİŞ</span>
+    </div>
+    <div class="viewfinder" id="dropZone" tabindex="0" role="button" aria-label="Tasarım yüklemek için tıkla veya dosya sürükle">
+      <span class="vf-corner vf-tl"></span>
+      <span class="vf-corner vf-tr"></span>
+      <span class="vf-corner vf-bl"></span>
+      <span class="vf-corner vf-br"></span>
+
+      <div id="lockView">
+        <div class="vf-icon">🔒</div>
+        <div class="vf-title">Yükleme alanı kilitli</div>
+        <div class="vf-sub">Sadece sahibi tasarım ekleyebilir. Devam etmek için şifreni gir.</div>
+        <div class="upload-meta">
+          <input type="password" class="tag-input" id="passInput" placeholder="şifre" autocomplete="off">
+          <button class="btn-primary" id="unlockBtn" style="padding:10px 20px;font-size:13px;">Kilidi Aç</button>
+        </div>
+        <div class="up-status" id="lockStatus"></div>
+      </div>
+
+      <div id="uploadView" style="display:none;">
+        <div class="vf-icon">⌁</div>
+        <div class="vf-title">Görseli buraya sürükle veya tıkla</div>
+        <div class="vf-sub">PNG, JPG, WEBP desteklenir · <b>en fazla ~8MB / görsel</b> · yüklenen görsele otomatik filigran eklenir</div>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <div class="upload-meta">
+          <input type="text" class="tag-input" id="tagInput" placeholder="etiket (örn. UI, illüstrasyon)">
+        </div>
+        <div class="up-status" id="upStatus"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section wrap" id="gallery">
+    <div class="section-head">
+      <h2>Galeri</h2>
+      <span class="section-num" id="galleryCount">02 / 0 TASARIM</span>
+    </div>
+    <div class="filter-row" id="filterRow" style="display:none;">
+      <button class="chip active" data-tag="__all">Tümü</button>
+    </div>
+    <div id="galleryRoot">
+      <div class="empty-state" id="emptyState">
+        <div class="vf-icon">⌁</div>
+        <div class="vf-title">Henüz tasarım yok</div>
+        <p>Yukarıdan ilk tasarımını yükle, burada senin için sergilesin.</p>
+      </div>
+    </div>
+    <div style="text-align:right;margin-top:20px;">
+      <button class="clear-all" id="clearAllBtn" style="display:none;">Tüm galeriyi temizle</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="logo"><b>ZYROX</b><span>CREATIVE</span></div>
+    <p>© 2026 ZyroxCreative — galeri herkese açık, yükleme şifreyle korunur.</p>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <div class="lb-content">
+    <button class="lb-close" id="lbClose" aria-label="Kapat">✕</button>
+    <div class="lb-img-wrap"><img id="lbImg" src="" alt="" draggable="false" oncontextmenu="return false"></div>
+    <div class="lb-footer">
+      <div>
+        <div class="lb-title" id="lbTitle"></div>
+        <div class="lb-tag" id="lbTag"></div>
+      </div>
+      <div class="lb-actions">
+        <a class="btn-ghost" id="lbBuy" href="#" target="_blank" rel="noopener" style="text-decoration:none;padding:10px 18px;font-size:13px;background:var(--lime);color:var(--ink);border-color:var(--lime);font-weight:600;">Satın Al</a>
+        <button class="btn-primary" id="lbDelete" style="padding:10px 18px;font-size:13px;background:var(--danger);">Sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'zyrox:gallery';
+// Bu, gerçek bir sunucu doğrulaması değildir — sayfa kaynağını görebilen biri
+// bu değeri okuyabilir. Sadece rastgele ziyaretçileri caydırmak içindir.
+// Kendi şifreni belirlemek için aşağıdaki değeri değiştir:
+const UPLOAD_PASSWORD = 'zyrox2026';
+// Satın al butonuna tıklanınca açılacak Shopier sayfası:
+const SHOPIER_URL = 'https://www.shopier.com/BURAYA-SHOPIER-LINKIN';
+// Görsellerin üzerine gömülecek filigran metni:
+const WATERMARK_TEXT = 'ZYROXCREATIVE · SATIN ALMADAN KULLANMAYIN';
+let gallery = [];
+let activeTag = '__all';
+let isUnlocked = false;
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const tagInput = document.getElementById('tagInput');
+const upStatus = document.getElementById('upStatus');
+const galleryRoot = document.getElementById('galleryRoot');
+const emptyState = document.getElementById('emptyState');
+const filterRow = document.getElementById('filterRow');
+const galleryCount = document.getElementById('galleryCount');
+const statCount = document.getElementById('statCount');
+const clearAllBtn = document.getElementById('clearAllBtn');
+
+// ---------- storage helpers ----------
+async function loadGallery(){
+  if(!window.storage){
+    upStatus.textContent = 'Kayıt sistemi bu görünümde çalışmıyor (bkz. not aşağıda).';
+    gallery = [];
+    render();
+    return;
+  }
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    gallery = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    gallery = [];
+  }
+  render();
+}
+
+async function persist(){
+  if(!window.storage){
+    upStatus.textContent = 'Bu görselleri kaydedemiyorum: bu dosya Claude artifact panelinin dışında açılmış. Linki Claude sohbetindeki önizleme üzerinden kullan.';
+    return false;
+  }
+  const payload = JSON.stringify(gallery);
+  if(payload.length > 4.7 * 1024 * 1024){
+    upStatus.textContent = 'Galeri depolama sınırına yaklaştı (~5MB). Daha küçük görsel yükle veya eski bir tasarımı sil.';
+    return false;
+  }
+  try{
+    const res = await window.storage.set(STORAGE_KEY, payload, true);
+    if(!res){
+      upStatus.textContent = 'Kaydetme başarısız oldu, tekrar deneyin.';
+      return false;
+    }
+    return true;
+  }catch(e){
+    upStatus.textContent = 'Kaydetme hatası: ' + (e && e.message ? e.message : 'bilinmeyen hata');
+    return false;
+  }
+}
+
+// ---------- image processing ----------
+function drawWatermark(ctx, width, height){
+  ctx.save();
+  ctx.globalAlpha = 0.24;
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+  ctx.lineWidth = 3;
+  const fontSize = Math.max(16, Math.round(width / 22));
+  ctx.font = `600 ${fontSize}px 'Space Grotesk', sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  const diag = Math.ceil(Math.sqrt(width*width + height*height));
+  ctx.translate(width/2, height/2);
+  ctx.rotate(-Math.PI/8);
+  ctx.translate(-diag/2, -diag/2);
+  const textWidth = ctx.measureText(WATERMARK_TEXT).width + fontSize * 3;
+  const stepY = fontSize * 3.2;
+  for(let y = 0; y < diag; y += stepY){
+    for(let x = 0; x < diag; x += textWidth){
+      ctx.strokeText(WATERMARK_TEXT, x, y);
+      ctx.fillText(WATERMARK_TEXT, x, y);
+    }
+  }
+  ctx.restore();
+}
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxDim = 1600;
+        let {width, height} = img;
+        if(width > maxDim || height > maxDim){
+          const scale = maxDim / Math.max(width, height);
+          width = Math.round(width*scale);
+          height = Math.round(height*scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        drawWatermark(ctx, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleFiles(files){
+  const list = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if(list.length === 0) return;
+  const tag = tagInput.value.trim() || 'genel';
+  upStatus.textContent = `İşleniyor 0/${list.length}...`;
+  let done = 0;
+  for(const file of list){
+    try{
+      const dataUrl = await compressImage(file);
+      gallery.unshift({
+        id: 'zx_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+        title: file.name.replace(/\.[^.]+$/, ''),
+        tag,
+        dataUrl,
+        createdAt: new Date().toISOString()
+      });
+    }catch(e){
+      // skip failed file
+    }
+    done++;
+    upStatus.textContent = `İşleniyor ${done}/${list.length}...`;
+  }
+  const ok = await persist();
+  if(ok){
+    upStatus.textContent = `${list.length} tasarım yüklendi ve kaydedildi.`;
+    tagInput.value = '';
+    setTimeout(()=>{ upStatus.textContent=''; }, 2500);
+  }
+  render();
+}
+
+// ---------- render ----------
+function formatDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('tr-TR', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function render(){
+  statCount.textContent = gallery.length;
+  galleryCount.textContent = `02 / ${gallery.length} TASARIM`;
+  clearAllBtn.style.display = gallery.length ? 'inline-block' : 'none';
+
+  // filter chips
+  const tags = Array.from(new Set(gallery.map(i=>i.tag)));
+  if(tags.length > 0){
+    filterRow.style.display = 'flex';
+    filterRow.innerHTML = `<button class="chip ${activeTag==='__all'?'active':''}" data-tag="__all">Tümü</button>` +
+      tags.map(t=>`<button class="chip ${activeTag===t?'active':''}" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('');
+    filterRow.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{ activeTag = chip.dataset.tag; render(); });
+    });
+  }else{
+    filterRow.style.display = 'none';
+  }
+
+  const filtered = activeTag === '__all' ? gallery : gallery.filter(i=>i.tag===activeTag);
+
+  if(gallery.length === 0){
+    galleryRoot.innerHTML = '';
+    galleryRoot.appendChild(emptyState);
+    return;
+  }
+
+  galleryRoot.innerHTML = `<div class="grid">${filtered.map(item=>`
+    <div class="card" tabindex="0" data-id="${item.id}" role="button" aria-label="${escapeHtml(item.title)} tasarımını büyüt">
+      <button class="del-btn" data-id="${item.id}" aria-label="Sil">✕</button>
+      <div class="buy-badge">Satın Al</div>
+      <div class="scanline"></div>
+      <img src="${item.dataUrl}" alt="${escapeHtml(item.title)}" loading="lazy" draggable="false" oncontextmenu="return false">
+      <div class="card-info">
+        <div class="card-title">${escapeHtml(item.title)}</div>
+        <div class="card-meta">
+          <span class="card-tag">${escapeHtml(item.tag)}</span>
+          <span class="card-date">${formatDate(item.createdAt)}</span>
+        </div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+
+  galleryRoot.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      if(e.target.classList.contains('del-btn')) return;
+      openLightbox(card.dataset.id);
+    });
+    card.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') openLightbox(card.dataset.id);
+    });
+  });
+  galleryRoot.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      deleteItem(btn.dataset.id);
+    });
+  });
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ---------- delete ----------
+async function deleteItem(id){
+  gallery = gallery.filter(i=>i.id!==id);
+  await persist();
+  render();
+  closeLightbox();
+}
+
+clearAllBtn.addEventListener('click', async ()=>{
+  if(!confirm('Tüm galeriyi silmek istediğine emin misin? Bu işlem geri alınamaz.')) return;
+  gallery = [];
+  await persist();
+  render();
+});
+
+// ---------- lightbox ----------
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbTitle = document.getElementById('lbTitle');
+const lbTag = document.getElementById('lbTag');
+const lbBuy = document.getElementById('lbBuy');
+const lbDelete = document.getElementById('lbDelete');
+let currentLbId = null;
+
+function openLightbox(id){
+  const item = gallery.find(i=>i.id===id);
+  if(!item) return;
+  currentLbId = id;
+  lbImg.src = item.dataUrl;
+  lbImg.alt = item.title;
+  lbTitle.textContent = item.title;
+  lbTag.textContent = '#' + item.tag;
+  lbBuy.href = SHOPIER_URL;
+  lightbox.classList.add('open');
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  currentLbId = null;
+}
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeLightbox(); });
+lbDelete.addEventListener('click', ()=>{ if(currentLbId) deleteItem(currentLbId); });
+
+// ---------- lock / unlock ----------
+const lockView = document.getElementById('lockView');
+const uploadView = document.getElementById('uploadView');
+const passInput = document.getElementById('passInput');
+const unlockBtn = document.getElementById('unlockBtn');
+const lockStatus = document.getElementById('lockStatus');
+
+function tryUnlock(){
+  if(passInput.value === UPLOAD_PASSWORD){
+    isUnlocked = true;
+    lockView.style.display = 'none';
+    uploadView.style.display = 'block';
+    lockStatus.textContent = '';
+  }else{
+    lockStatus.textContent = 'Şifre yanlış, tekrar dene.';
+    dropZone.style.animation = 'none';
+    requestAnimationFrame(()=>{ dropZone.style.animation = 'shake .35s'; });
+  }
+}
+unlockBtn.addEventListener('click', tryUnlock);
+passInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlock(); });
+
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake{
+  0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);}
+  40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);}
+}`;
+document.head.appendChild(shakeStyle);
+
+// ---------- upload interactions ----------
+dropZone.addEventListener('click', (e)=>{
+  if(!isUnlocked) return;
+  if(e.target === fileInput) return;
+  fileInput.click();
+});
+dropZone.addEventListener('keydown', (e)=>{ if(isUnlocked && e.key==='Enter' && e.target===dropZone) fileInput.click(); });
+fileInput.addEventListener('change', (e)=> handleFiles(e.target.files));
+
+['dragenter','dragover'].forEach(evt=>{
+  dropZone.addEventListener(evt, (e)=>{
+    if(!isUnlocked) return;
+    e.preventDefault(); dropZone.classList.add('drag');
+  });
+});
+['dragleave','drop'].forEach(evt=>{
+  dropZone.addEventListener(evt, (e)=>{ e.preventDefault(); dropZone.classList.remove('drag'); });
+});
+dropZone.addEventListener('drop', (e)=>{
+  if(!isUnlocked) return;
+  const files = e.dataTransfer.files;
+  handleFiles(files);
+});
+
+// ---------- helpers ----------
+function goToUpload(){
+  document.getElementById('upload').scrollIntoView({behavior:'smooth', block:'start'});
+  setTimeout(()=>{
+    if(!isUnlocked){ passInput.focus(); } else { fileInput.click(); }
+  }, 400);
+}
+
+// ---------- init ----------
+loadGallery();
+</script>
+</body>
+</html>
